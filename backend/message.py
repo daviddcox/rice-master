@@ -16,9 +16,10 @@ def index():
 def handle_connect():
     global user_id
     conencted_users[request.sid] = user_id 
-    user_id += 1
     print(conencted_users)
     print('Client connected')
+    emit('connection_message', user_id)
+    user_id += 1
 
 @socketio.on('disconnect')
 def handle_disconnect():

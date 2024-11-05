@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FocusEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, FocusEvent, useEffect, useId } from 'react';
 import io from 'socket.io-client';
 import "./index.css";
 
@@ -9,10 +9,15 @@ interface Message {
   message: string;
 }
 
+interface ConnectionMessage {
+  user_id: number;
+}
+
 export default function InteractiveTextbox(): JSX.Element {
   const [inputValue, setInputValue] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [userID, setUserID] = useState<number>(-1);
 
   useEffect(() => {
     socket.on('chat message', (message) => {
@@ -20,7 +25,17 @@ export default function InteractiveTextbox(): JSX.Element {
       console.log(message);
     });
     return () => {
-      socket.off('chat message'); // Remove the event listener
+      socket.off('chat message');
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on('connection_message', (message) => {
+      console.log(message);
+      setUserID(message);
+    });
+    return () => {
+      socket.off('connection_message');
     };
   }, []);
 
@@ -44,11 +59,24 @@ export default function InteractiveTextbox(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-dark_blue" >
-      <div className='flex flex-col items-center justify-center bg-primary p-4 rounded-md'>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-tropical_indigo" >
+      <div className='flex flex-col items-start  bg-ghost_white p-4 rounded-md min-w-96 min-h-96'>
         {messages.map((message, index) => (
-          <div key={index} className="mb-2">
-            {`User ${message.user_id}: ${message.message}`}
+          <div key={index} className='flex flex-col min-w-full'>
+            {message.user_id === userID ?
+              <div className='m-1 rounded-md p-2 self-end bg-periwinkle'>
+                {message.message}
+              </div>
+              :
+              <div className='flex flex-row items-center justify-center self-start'>
+                <div className='m-1 rounded-full p-2 bg-apricot'>
+                  {message.user_id}
+                </div>
+                <div className='m-1 rounded-md p-2 bg-apricot'>
+                  {message.message}
+                </div>
+              </div>
+            }
           </div>
         ))}
       </div>
@@ -65,7 +93,7 @@ export default function InteractiveTextbox(): JSX.Element {
         />
         <button
           onClick={handleSubmit}
-          className='bg-gray-100 rounded font-semi-bold hover:bg-gray-200 p-2 shadow text-base'>
+          className='bg-periwinkle rounded font-semi-bold hover:bg-periwinkle-400 p-2 shadow text-base'>
           Send
         </button>
       </div>
