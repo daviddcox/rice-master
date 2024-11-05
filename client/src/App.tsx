@@ -89,6 +89,12 @@ export default function InteractiveTextbox(): JSX.Element {
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder="Type something..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
           className={`w-64 p-3 border rounded-md text-gray-800 focus:outline-none transition duration-200 ${isFocused ? 'border-blue-500 shadow-lg' : 'border-gray-300'}`}
         />
         <button
