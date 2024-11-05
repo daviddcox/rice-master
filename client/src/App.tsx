@@ -7,11 +7,16 @@ const socket = io('http://localhost:5000');
 interface Message {
   user_id: number;
   message: string;
+  time: Date;
 }
 
 interface ConnectionMessage {
   user_id: number;
 }
+
+const get_time_str = (datetime: Date): string => {
+  return datetime.toLocaleString('en-US', { hour12: true, dateStyle: "short", timeStyle: "short" });
+};
 
 export default function InteractiveTextbox(): JSX.Element {
   const [inputValue, setInputValue] = useState<string>('');
@@ -21,6 +26,7 @@ export default function InteractiveTextbox(): JSX.Element {
 
   useEffect(() => {
     socket.on('chat message', (message) => {
+      message.time = new Date(message.time);
       setMessages((prevMessage) => [...prevMessage, message]);
       console.log(message);
     });
@@ -60,21 +66,29 @@ export default function InteractiveTextbox(): JSX.Element {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-tropical_indigo" >
-      <div className='flex flex-col items-start  bg-ghost_white p-4 rounded-md min-w-96 min-h-96'>
+      <div className='flex flex-col items-start  bg-ghost_white p-4 rounded-md w-96 h-96 overflow-y-scroll'>
         {messages.map((message, index) => (
           <div key={index} className='flex flex-col min-w-full'>
             {message.user_id === userID ?
-              <div className='m-1 rounded-md p-2 self-end bg-periwinkle'>
-                {message.message}
+              <div className='my-2 flex flex-col items-center self-end'>
+                <div className='flex flex-row items-center justify-center self-end'>
+                  <div className='m-1 rounded-md p-2 bg-periwinkle'>
+                    {message.message}
+                  </div>
+                </div>
+                <p className='text-sm text-slate-400 self-end'>{get_time_str(message.time)}</p>
               </div>
               :
-              <div className='flex flex-row items-center justify-center self-start'>
-                <div className='m-1 rounded-full p-2 bg-apricot'>
-                  {message.user_id}
+              <div className='my-2 flex flex-col items-center self-start'>
+                <div className='flex flex-row items-center justify-center self-start'>
+                  <div className='m-1 rounded-full p-2 bg-apricot'>
+                    <p className='text-sm'>{message.user_id}</p>
+                  </div>
+                  <div className='m-1 rounded-md p-2 bg-apricot'>
+                    {message.message}
+                  </div>
                 </div>
-                <div className='m-1 rounded-md p-2 bg-apricot'>
-                  {message.message}
-                </div>
+                <p className='text-sm text-slate-400 self-start'>{get_time_str(message.time)}</p>
               </div>
             }
           </div>
@@ -103,6 +117,6 @@ export default function InteractiveTextbox(): JSX.Element {
           Send
         </button>
       </div>
-    </div>
+    </div >
   );
 }

@@ -1,5 +1,6 @@
 from flask_socketio import SocketIO, emit
 from flask import request
+from datetime import datetime
 
 socketio = SocketIO(cors_allowed_origins="*")
 
@@ -24,4 +25,4 @@ def handle_disconnect():
 def handle_chat_message(data):
     print(f"Received chat message: {data}")
     user_id = connected_users[request.sid]
-    emit('chat message', {"user_id": user_id, "message": data}, broadcast=True)
+    emit('chat message', {"user_id": user_id, "message": data, "time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S") }, broadcast=True)
