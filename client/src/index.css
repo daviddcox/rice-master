@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 .grad {
-  background-image: linear-gradient(to bottom right, black, theme('colors.tropical_indigo.500'));
+	background-image: linear-gradient(
+		to bottom right,
+		black,
+		theme('colors.tropical_indigo.500')
+	);
 }
