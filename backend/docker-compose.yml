@@ -1,0 +1,14 @@
+name: ricemaster_backend
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+    ports:
+      - "5000:5000"
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./server
+          target: /server
