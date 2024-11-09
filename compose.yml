@@ -1,0 +1,23 @@
+name: ricemaster
+
+services:
+  backend-dev:
+    profiles: [dev]
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    ports:
+      - "5000:5000"
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/src
+          target: /server
+
+  webserver-dev:
+    profiles: [dev]
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - "5001:5001"
