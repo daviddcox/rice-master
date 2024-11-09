@@ -16,10 +16,14 @@ def handle_connect():
     emit('connection_message', user_id)
     user_id += 1
 
+    emit('active_count', len(connected_users), broadcast=True)
+
 @socketio.on('disconnect')
 def handle_disconnect():
     print(f'Client: {connected_users[request.sid]} disconnected')
     del connected_users[request.sid]
+
+    emit('active_count', len(connected_users), broadcast=True)
 
 @socketio.on('chat message')
 def handle_chat_message(data):
