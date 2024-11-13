@@ -9,10 +9,12 @@ import io from 'socket.io-client';
 import { GoDotFill } from 'react-icons/go';
 import './index.css';
 
-const socket = io('http://localhost:5000');
+const socket = io('http://localhost:5000', {
+	withCredentials: true,
+});
 
 interface Message {
-	user_id: number;
+	username: string;
 	message: string;
 	time: Date;
 }
@@ -29,7 +31,7 @@ export default function InteractiveTextbox(): JSX.Element {
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [messages, setMessages] = useState<Message[]>([]);
-	const [userID, setUserID] = useState<number>(-1);
+	const [username, setUsername] = useState<string>('');
 	const [activeUserCount, setActiveUserCount] = useState<number>(0);
 
 	useEffect(() => {
@@ -39,9 +41,9 @@ export default function InteractiveTextbox(): JSX.Element {
 			console.log(message);
 		};
 
-		const handleConnectionMessage = (message: number) => {
+		const handleConnectionMessage = (message: string) => {
 			console.log(message);
-			setUserID(message);
+			setUsername(message);
 		};
 
 		const handleActiveCount = (active_count: number) => {
@@ -91,7 +93,7 @@ export default function InteractiveTextbox(): JSX.Element {
 				<div className="flex flex-col items-start  bg-ghost_white p-4 rounded-md w-96 h-96 overflow-y-scroll">
 					{messages.map((message, index) => (
 						<div key={index} className="flex flex-col min-w-full">
-							{message.user_id === userID ? (
+							{message.username === username ? (
 								<div className="my-2 flex flex-col items-center self-end">
 									<div className="flex flex-row items-center justify-center self-end">
 										<div className="m-1 rounded-md p-2 bg-periwinkle">
@@ -107,7 +109,7 @@ export default function InteractiveTextbox(): JSX.Element {
 									<div className="flex flex-row items-center justify-center self-start">
 										<div className="m-1 rounded-full p-2 bg-apricot">
 											<p className="text-sm">
-												{message.user_id}
+												{message.username}
 											</p>
 										</div>
 										<div className="m-1 rounded-md p-2 bg-apricot">
