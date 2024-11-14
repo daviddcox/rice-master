@@ -21,3 +21,8 @@ services:
       dockerfile: ./Dockerfile.dev
     ports:
       - "5001:5001"
+    develop:
+      watch:
+        - action: sync
+          path: ./client/
+          target: /webserver
